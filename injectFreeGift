@@ -1,0 +1,71 @@
+{% assign num = 0 %}
+{% assign cart_check = 0 %}
+{% assign bold_exist = false %}
+{% assign gift_count = 0 %}
+{% assign gift_exist = 0 %}
+
+
+{% for item in cart.items %}            
+  {% if item.vendor == "FreeGift" %}       
+  	{% assign gift_count = gift_count | plus: 1 %}
+  {% endif %}
+ 
+  {% if item.vendor != "FreeGift" %}       
+  	 
+  {% endif %}
+  
+  {% if gift_count > 0 %}       
+  	{% assign gift_exist = true %}
+  {% else %}
+	  {% assign gift_exist = false %}
+  {% endif %}
+	
+  {% assign properties_size = item.properties | size %}
+  {% if properties_size > 8 %}  
+  	{% assign bold_exist = true %}
+  {% endif %}
+
+{% endfor %}
+
+{% if bold_exist %}
+				<span class="sample-heading-sub1" style="text-align: center;display:block;font-weight:800;padding-bottom:20px;">Thank you for purchasing a subscription. Enjoy a free gift on us!</span>
+	{% if gift_exist == true %}
+
+		{% comment %}
+    Do nothing, dont show button to add gifts
+		{% endcomment %}
+	
+	{% elsif cart.total_price > 5000 %}
+
+		<div class ="free-gift-row" style="display:flex;justify-content:center;">
+
+		<input type="button" id="add-to-cart-button" value="ACCEPT FREE GIFTS" onClick="addItemToCart(### ITEM PRODUCT NUMBER HERE ###,1);" style="border-radius:4px;font-weight:normal;padding:6px 40px;font-size:19px;background:#c5a133;margin-bottom: 10px;"/>        
+		{{ '//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js' | script_tag }}
+			{{ 'api.jquery.js' | shopify_asset_url | script_tag }}  
+
+			<script>  function addItemToCart(variant_id, qty) {
+            console.log("additemtocart")
+            data = {
+              "id": variant_id,
+              "quantity": qty,
+           
+            }
+            jQuery.ajax({
+              type: 'POST',
+              url: '/cart/add.js',
+              data: data,
+              dataType: 'json',
+              success: function() { 
+                window.location.href = '/cart'; 
+              }
+            });
+          }
+          </script></div>
+
+	   
+          
+    
+	{% endif %}
+{% else %}
+              	<span class="sample-heading-sub1" style="text-align: center;display:block;font-weight:800;padding-bottom:20px;">Purchase a subscription plan on your product and qualify for a free gift!</span>
+{% endif %}
