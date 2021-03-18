@@ -1,0 +1,39 @@
+DISCOUNT_PERCENT=20
+CART_CHECK = false
+CART_DISCOUNT_MESSAGE="You're Saving " + (DISCOUNT_PERCENT).to_s + "% off with a purchase of our face oil!"
+
+def cart_has_item?
+  Input.cart.line_items.each do |item|
+  # if cart contains your special product then return true
+    if  item.variant.product.id == 6554238353563
+      return true 
+    end
+  end
+  return false
+end 
+
+eligible_items = Input.cart.line_items.select do |line_item|
+  product = line_item.variant.product
+  !product.gift_card?
+end
+
+
+#Check to make sure cart has at least 1 item and the cart contains special item
+if cart_has_item?
+  # pull the least exensive item
+  # calculate the discount to be applied
+  percent = Decimal.new(DISCOUNT_PERCENT) / 100.0
+
+  Input.cart.line_items.each do |item|
+    puts item.variant.product.product_type
+     if item.variant.product.product_type == "Bundle"
+      puts "bundle found - no discount deal"
+     else
+       puts "item is not bundle"
+        item.change_line_price(item.line_price - (item.line_price(Money.new(cents:100)) * percent * item.quantity), message: CART_DISCOUNT_MESSAGE)
+      end
+    
+    end
+  end
+
+Output.cart = Input.cart
