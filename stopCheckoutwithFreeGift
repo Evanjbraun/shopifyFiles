@@ -1,0 +1,27 @@
+				{% for item in cart.items %}  
+                  {% if item.vendor != "Sample" and item.vendor != "FreeGift" %}       
+                          {% assign cart_check = cart_check | plus: 1 %}
+                  {% endif %}
+                  {% endfor %}
+                  
+                    {% if cart_check > 0 %}       
+                      {% assign button_open = true %}
+                    {% else %}
+                      {% assign button_open = false %}
+                    {% endif %}
+
+                      {% if button_open == false %}
+                          <button type="submit" name="checkout" disabled="disabled" style="color: red;" class="btn btn--no-animate cart__checkout{% if settings.cart_terms_conditions_enable %} cart__checkout--page{% endif %}">
+                          {{ 'cart.general.checkout' | t }}
+                          </button> 
+                          <p style="font-size:small;color:red;">You cannot checkout with only a sample/gift in cart.</p>
+                    {%- else -%}
+                        <button type="submit" name="checkout" class="btn btn--no-animate cart__checkout{% if settings.cart_terms_conditions_enable %} cart__checkout--page{% endif %}">
+                          {{ 'cart.general.checkout' | t }}
+                        </button>
+                    {%- endif -%}
+
+                    {%- if additional_checkout_buttons and settings.cart_additional_buttons -%}
+                      <div class="additional-checkout-buttons">{{ content_for_additional_checkout_buttons }}</div>
+                    {%- endif -%}
+                  
